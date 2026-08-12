@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>해외여행 준비물 체크리스트</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,241 +13,362 @@
             font-family: 'Pretendard', sans-serif;
             background-color: #f3f4f6;
             color: #1f2937;
+            /* 하단 네비게이션 바 공간 확보 */
+            padding-bottom: 80px; 
         }
 
-        /* Custom Scrollbar for a cleaner look */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
         /* Checkbox animation */
         .checkbox-container input:checked + div {
             background-color: #3b82f6;
             border-color: #3b82f6;
         }
-        
-        .checkbox-container input:checked + div svg {
-            display: block;
-        }
+        .checkbox-container input:checked + div svg { display: block; }
 
-        /* Strikethrough animation for checked items */
-        .item-text {
-            transition: all 0.2s ease;
-        }
-        .checked-item .item-text {
-            text-decoration: line-through;
-            color: #9ca3af;
-        }
+        /* Strikethrough */
+        .item-text { transition: all 0.2s ease; }
+        .checked-item .item-text { text-decoration: line-through; color: #9ca3af; }
+
+        /* Tab active state */
+        .tab-active { color: #3b82f6; }
+        .tab-active .icon-bg { background-color: #eff6ff; }
+        .tab-inactive { color: #6b7280; }
+        
+        /* iOS Safe Area */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
-<body class="min-h-screen pb-20 sm:pb-10">
+<body class="min-h-screen">
 
-    <header class="sticky top-0 bg-white/80 backdrop-blur-md shadow-sm z-10 px-4 py-4 sm:px-6 lg:px-8">
-        <div class="max-w-3xl mx-auto">
-            <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+    <header class="sticky top-0 bg-white/90 backdrop-blur-md shadow-sm z-20 px-4 py-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto flex items-center justify-between">
+            <h1 id="headerTitle" class="text-xl font-bold text-gray-900 flex items-center gap-2 transition-all">
                 <i class="fa-solid fa-plane-departure text-blue-500"></i>
-                여행 준비물 체크리스트
+                가족 공통 준비물
             </h1>
             
-            <!-- Progress Bar -->
-            <div class="mt-4">
-                <div class="flex justify-between text-sm font-medium text-gray-600 mb-1">
-                    <span>준비 진행률</span>
-                    <span id="progressText">0% (0/0)</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2.5">
-                    <div id="progressBar" class="bg-blue-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
-                </div>
+            <!-- 초기화 버튼 (상단으로 이동) -->
+            <button onclick="confirmReset()" class="text-gray-400 hover:text-red-500 bg-gray-100 hover:bg-red-50 p-2.5 rounded-full transition-colors focus:outline-none" aria-label="초기화" title="현재 탭 초기화">
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
+        </div>
+        
+        <div class="max-w-3xl mx-auto mt-3">
+            <div class="flex justify-between text-xs font-medium text-gray-500 mb-1">
+                <span>진행률 (체크 항목 기준)</span>
+                <span id="progressText">0%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                <div id="progressBar" class="bg-blue-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
             </div>
         </div>
     </header>
 
     <main class="max-w-3xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
         
-        <!-- Add New Item Section -->
-        <div class="bg-white p-4 rounded-xl shadow-sm mb-6 border border-gray-100 flex gap-2">
-            <select id="categorySelect" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none">
-                <option value="essential">필수 서류/돈</option>
-                <option value="electronics">전자기기</option>
-                <option value="toiletries">세면도구/화장품</option>
-                <option value="clothes">의류/신발</option>
-                <option value="medicine">비상약</option>
-                <option value="others">기타 유용템</option>
+        <!-- 새 항목 추가 폼 -->
+        <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm mb-6 border border-gray-100 flex gap-2">
+            <select id="categorySelect" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 outline-none w-1/3 min-w-[100px]">
+                <!-- JS에서 동적 생성됨 -->
             </select>
-            <input type="text" id="newItemInput" placeholder="새로운 준비물 추가..." class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 outline-none" onkeypress="handleKeyPress(event)">
-            <button onclick="addNewItem()" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 outline-none transition-colors whitespace-nowrap">
+            <input type="text" id="newItemInput" placeholder="준비물 추가..." class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 outline-none" onkeypress="handleKeyPress(event)">
+            <button onclick="addNewItem()" class="text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-4 py-2 outline-none transition-colors whitespace-nowrap">
                 추가
             </button>
         </div>
 
-        <!-- Checklist Container -->
-        <div id="checklistContainer" class="space-y-6">
-            <!-- Categories will be rendered here by JS -->
+        <!-- 체크리스트 리스트 -->
+        <div id="checklistContainer" class="space-y-5 mb-20">
+            <!-- JS에서 동적 렌더링 -->
         </div>
 
     </main>
 
-    <div class="fixed bottom-6 right-6 z-20">
-        <button onclick="confirmReset()" class="bg-red-500 hover:bg-red-600 text-white rounded-full p-4 shadow-lg transition-transform hover:scale-105 group relative flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-red-300">
-            <i class="fa-solid fa-rotate-right text-lg"></i>
-            <span class="absolute right-full mr-3 bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                초기화
-            </span>
-        </button>
-    </div>
+    <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 pb-safe z-30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <div class="max-w-3xl mx-auto flex justify-around items-center px-2 py-2">
+            
+            <button onclick="changeTab('common')" id="tab-common" class="flex flex-col items-center p-2 min-w-[60px] tab-active transition-colors">
+                <div class="icon-bg w-10 h-10 rounded-full flex items-center justify-center mb-1 transition-colors">
+                    <i class="fa-solid fa-suitcase-rolling text-lg"></i>
+                </div>
+                <span class="text-[11px] font-semibold">공통</span>
+            </button>
+
+            <button onclick="changeTab('dad')" id="tab-dad" class="flex flex-col items-center p-2 min-w-[60px] tab-inactive transition-colors">
+                <div class="icon-bg w-10 h-10 rounded-full flex items-center justify-center mb-1 transition-colors">
+                    <i class="fa-solid fa-user text-lg"></i>
+                </div>
+                <span class="text-[11px] font-semibold">아빠</span>
+            </button>
+
+            <button onclick="changeTab('mom')" id="tab-mom" class="flex flex-col items-center p-2 min-w-[60px] tab-inactive transition-colors">
+                <div class="icon-bg w-10 h-10 rounded-full flex items-center justify-center mb-1 transition-colors">
+                    <i class="fa-solid fa-user text-lg"></i>
+                </div>
+                <span class="text-[11px] font-semibold">엄마</span>
+            </button>
+
+            <button onclick="changeTab('daughter')" id="tab-daughter" class="flex flex-col items-center p-2 min-w-[60px] tab-inactive transition-colors">
+                <div class="icon-bg w-10 h-10 rounded-full flex items-center justify-center mb-1 transition-colors">
+                    <i class="fa-solid fa-child-reaching text-lg"></i>
+                </div>
+                <span class="text-[11px] font-semibold">딸</span>
+            </button>
+
+            <button onclick="changeTab('son')" id="tab-son" class="flex flex-col items-center p-2 min-w-[60px] tab-inactive transition-colors">
+                <div class="icon-bg w-10 h-10 rounded-full flex items-center justify-center mb-1 transition-colors">
+                    <i class="fa-solid fa-child text-lg"></i>
+                </div>
+                <span class="text-[11px] font-semibold">아들</span>
+            </button>
+
+        </div>
+    </nav>
 
     <script>
-        // Default checklist data based on research
-        const defaultData = {
-            essential: {
-                title: "🛂 필수 서류 및 자금",
-                items: [
-                    { id: 'e1', text: "여권 (유효기간 6개월 이상 확인)", checked: false },
-                    { id: 'e2', text: "항공권 E-티켓 사본", checked: false },
-                    { id: 'e3', text: "숙소 바우처 사본", checked: false },
-                    { id: 'e4', text: "여행자 보험 영문 증명서", checked: false },
-                    { id: 'e5', text: "해외 결제용 카드 (트래블월렛/로그 등)", checked: false },
-                    { id: 'e6', text: "현지 통화 (현금 소량)", checked: false },
-                    { id: 'e7', text: "국제운전면허증 (렌터카 이용시)", checked: false }
-                ]
-            },
-            electronics: {
-                title: "📱 전자기기",
-                items: [
-                    { id: 'el1', text: "스마트폰 및 충전기", checked: false },
-                    { id: 'el2', text: "보조배터리 (반드시 기내 수하물)", checked: false },
-                    { id: 'el3', text: "멀티 어댑터 (돼지코)", checked: false },
-                    { id: 'el4', text: "유심 / eSIM / 포켓와이파이", checked: false },
-                    { id: 'el5', text: "멀티탭 (콘센트 부족 대비)", checked: false },
-                    { id: 'el6', text: "이어폰 (노이즈 캔슬링 추천)", checked: false }
-                ]
-            },
-            toiletries: {
-                title: "🧴 세면도구 및 화장품",
-                items: [
-                    { id: 't1', text: "칫솔, 치약 (기내용 포함)", checked: false },
-                    { id: 't2', text: "스킨케어 (소분 추천)", checked: false },
-                    { id: 't3', text: "선크림", checked: false },
-                    { id: 't4', text: "클렌징 용품", checked: false },
-                    { id: 't5', text: "샤워기 필터 (수질 예민시)", checked: false },
-                    { id: 't6', text: "면도기 / 제모기", checked: false }
-                ]
-            },
+        // 공통 기본 데이터 (이전과 동일)
+        const commonDefaultData = {
+            essential: { title: "🛂 필수 서류 및 자금", items: [
+                { id: 'e1', text: "여권 (유효기간 확인)", type: 'checkbox', checked: false },
+                { id: 'e2', text: "항공권 E-티켓 사본", type: 'checkbox', checked: false },
+                { id: 'e3', text: "여행자보험 가입 및 사본", type: 'checkbox', checked: false },
+                { id: 'e5', text: "트래블월렛/해외결제카드", type: 'checkbox', checked: false },
+                { id: 'e6', text: "현지 통화 (현금 소량)", type: 'checkbox', checked: false }
+            ]},
+            electronics: { title: "📱 전자기기", items: [
+                { id: 'el3', text: "멀티 어댑터 (돼지코)", type: 'checkbox', checked: false },
+                { id: 'el4', text: "유심 / eSIM / 로밍", type: 'checkbox', checked: false },
+                { id: 'el5', text: "멀티탭", type: 'checkbox', checked: false },
+                { id: 'el6', text: "충전케이블", type: 'checkbox', checked: false },
+                { id: 'el7', text: "카메라", type: 'checkbox', checked: false },
+                { id: 'el8', text: "셀카봉", type: 'checkbox', checked: false },
+                { id: 'el9', text: "가방무게저울", type: 'checkbox', checked: false },
+                { id: 'el10', text: "다리미 (휴대용)", type: 'checkbox', checked: false }
+            ]},
+            toiletries: { title: "🧴 세면도구 및 화장품", items: [
+                { id: 't1', text: "칫솔, 치약", type: 'checkbox', checked: false },
+                { id: 't2', text: "스킨케어 용품", type: 'checkbox', checked: false },
+                { id: 't3', text: "선크림", type: 'checkbox', checked: false },
+                { id: 't4', text: "린스", type: 'checkbox', checked: false },
+                { id: 't5', text: "세탁세제", type: 'checkbox', checked: false },
+                { id: 't6', text: "샤워기필터", type: 'checkbox', checked: false },
+                { id: 't7', text: "면봉", type: 'checkbox', checked: false },
+                { id: 't8', text: "빗", type: 'checkbox', checked: false }
+            ]},
+            medicine: { title: "💊 비상약 및 위생", items: [
+                { id: 'm1', text: "종합 감기약 / 해열제", type: 'checkbox', checked: false },
+                { id: 'm2', text: "소화제 / 지사제", type: 'checkbox', checked: false },
+                { id: 'm4', text: "반창고 / 연고", type: 'checkbox', checked: false },
+                { id: 'm5', text: "물티슈", type: 'checkbox', checked: false },
+                { id: 'm6', text: "지퍼백", type: 'checkbox', checked: false }
+            ]}
+        };
+
+        // 개인별 공통 기본 템플릿
+        const personalDefaultTemplate = {
             clothes: {
-                title: "👕 의류 및 신발",
+                title: "👕 의류 (수량 체크)",
                 items: [
-                    { id: 'c1', text: "일정별 겉옷 및 이너웨어", checked: false },
-                    { id: 'c2', text: "속옷 및 양말 (여유있게)", checked: false },
-                    { id: 'c3', text: "잠옷", checked: false },
-                    { id: 'c4', text: "편한 운동화", checked: false },
-                    { id: 'c5', text: "실내용 또는 간편한 슬리퍼", checked: false },
-                    { id: 'c6', text: "가디건 등 긴팔 (기내/에어컨 대비)", checked: false }
+                    { id: 'c1', text: "외출복 상의", type: 'counter', count: 0, checked: false },
+                    { id: 'c2', text: "외출복 하의", type: 'counter', count: 0, checked: false },
+                    { id: 'c3', text: "잠옷", type: 'counter', count: 0, checked: false },
+                    { id: 'c4', text: "속옷", type: 'counter', count: 0, checked: false },
+                    { id: 'c5', text: "양말", type: 'counter', count: 0, checked: false }
                 ]
             },
-            medicine: {
-                title: "💊 비상약 및 위생",
+            personal: {
+                title: "🎒 개인 소지품",
                 items: [
-                    { id: 'm1', text: "종합 감기약 / 해열제", checked: false },
-                    { id: 'm2', text: "소화제 / 지사제", checked: false },
-                    { id: 'm3', text: "진통제 (두통, 생리통 등)", checked: false },
-                    { id: 'm4', text: "반창고 / 연고", checked: false },
-                    { id: 'm5', text: "물티슈 / 소독용 티슈", checked: false }
-                ]
-            },
-            others: {
-                title: "✨ 기타 유용템",
-                items: [
-                    { id: 'o1', text: "목베개 (장거리 비행시)", checked: false },
-                    { id: 'o2', text: "접이식 우산 / 양산", checked: false },
-                    { id: 'o3', text: "지퍼백 / 비닐봉투 (젖은 옷 보관)", checked: false },
-                    { id: 'o4', text: "볼펜 (출입국 신고서 작성용)", checked: false },
-                    { id: 'o5', text: "휴대용 가방 (크로스백 등)", checked: false }
+                    { id: 'p1', text: "보조배터리", type: 'checkbox', checked: false },
+                    { id: 'p2', text: "버즈 이어폰", type: 'checkbox', checked: false },
+                    { id: 'p3', text: "모자", type: 'checkbox', checked: false },
+                    { id: 'p4', text: "노트북", type: 'checkbox', checked: false },
+                    { id: 'p5', text: "슬리퍼", type: 'checkbox', checked: false },
+                    { id: 'p6', text: "우산", type: 'checkbox', checked: false }
                 ]
             }
         };
 
-        // State management
-        let checklistData = {};
+        // 아빠, 아들 데이터 구성 (기본 템플릿과 동일)
+        const dadData = JSON.parse(JSON.stringify(personalDefaultTemplate));
+        dadData.personal.items.push(
+            { id: 'dad_p1', text: "면도기", type: 'checkbox', checked: false }
+        );
+        const sonData = JSON.parse(JSON.stringify(personalDefaultTemplate));
 
-        
-        // Initialize App
+        // 엄마 전용 데이터 추가 (다이슨 등 추가)
+        const momData = JSON.parse(JSON.stringify(personalDefaultTemplate));
+        momData.personal.items.push(
+            { id: 'm_p1', text: "여성용품", type: 'checkbox', checked: false },
+            { id: 'm_p2', text: "화장품", type: 'checkbox', checked: false },
+            { id: 'm_p3', text: "클렌징용품", type: 'checkbox', checked: false },
+            { id: 'm_p4', text: "다이슨", type: 'checkbox', checked: false },
+            { id: 'm_p5', text: "머리끈", type: 'checkbox', checked: false }
+        );
+
+        // 딸 전용 데이터 추가
+        const daughterData = JSON.parse(JSON.stringify(personalDefaultTemplate));
+        daughterData.personal.items.push(
+            { id: 'd_p1', text: "여성용품", type: 'checkbox', checked: false },
+            { id: 'd_p2', text: "화장품", type: 'checkbox', checked: false },
+            { id: 'd_p3', text: "클렌징용품", type: 'checkbox', checked: false },
+            { id: 'd_p4', text: "교정기", type: 'checkbox', checked: false },
+            { id: 'd_p5', text: "머리끈", type: 'checkbox', checked: false }
+        );
+
+        // 전체 앱 데이터 구조
+        const defaultAppData = {
+            common: commonDefaultData,
+            dad: dadData,
+            mom: momData,
+            daughter: daughterData,
+            son: sonData
+        };
+
+        let appData = {};
+        let currentTab = 'common';
+
+        // 탭 이름 매핑 (이름 변경)
+        const tabNames = {
+            common: "가족 공통 준비물",
+            dad: "아빠 님의 짐",
+            mom: "엄마 님의 짐",
+            daughter: "딸 님의 짐",
+            son: "아들 님의 짐"
+        };
+
         function init() {
             loadData();
+            updateAddForm();
             renderChecklist();
             updateProgress();
         }
 
-        // Load data from LocalStorage or use default
         function loadData() {
-            const savedData = localStorage.getItem('travelChecklistData');
+            // 저장소 키를 v4로 변경하여 새로 추가된 기본 데이터(엄마, 딸 전용 등)가 바로 반영되도록 설정
+            const savedData = localStorage.getItem('travelApp_v4');
             if (savedData) {
-                checklistData = JSON.parse(savedData);
-                // Ensure all default categories exist in loaded data (in case of updates)
-                for (const cat in defaultData) {
-                    if (!checklistData[cat]) {
-                        checklistData[cat] = defaultData[cat];
+                appData = JSON.parse(savedData);
+                for (const key in defaultAppData) {
+                    if (!appData[key]) {
+                        appData[key] = JSON.parse(JSON.stringify(defaultAppData[key]));
+                    }
+                }
+                for (const tabKey in appData) {
+                    for (const category in appData[tabKey]) {
+                        appData[tabKey][category].items.forEach(item => {
+                            if (item.checked === undefined) {
+                                item.checked = false;
+                            }
+                        });
                     }
                 }
             } else {
-                // Deep copy default data
-                checklistData = JSON.parse(JSON.stringify(defaultData));
+                appData = JSON.parse(JSON.stringify(defaultAppData));
             }
         }
 
-        // Save data to LocalStorage
         function saveData() {
-            localStorage.setItem('travelChecklistData', JSON.stringify(checklistData));
+            localStorage.setItem('travelApp_v4', JSON.stringify(appData));
             updateProgress();
         }
 
-        // Render the UI
+        function changeTab(tabId) {
+            currentTab = tabId;
+            
+            // 헤더 제목 변경
+            document.getElementById('headerTitle').innerHTML = `
+                ${tabId === 'common' ? '<i class="fa-solid fa-plane-departure text-blue-500"></i>' : '<i class="fa-solid fa-briefcase text-blue-500"></i>'}
+                ${tabNames[tabId]}
+            `;
+
+            // 하단 탭 스타일 업데이트
+            Object.keys(tabNames).forEach(id => {
+                const btn = document.getElementById(`tab-${id}`);
+                if (id === tabId) {
+                    btn.classList.remove('tab-inactive');
+                    btn.classList.add('tab-active');
+                } else {
+                    btn.classList.remove('tab-active');
+                    btn.classList.add('tab-inactive');
+                }
+            });
+
+            updateAddForm();
+            renderChecklist();
+            updateProgress();
+        }
+
+        // 입력 폼 카테고리 업데이트 (공통 vs 개인)
+        function updateAddForm() {
+            const select = document.getElementById('categorySelect');
+            select.innerHTML = '';
+            
+            if (currentTab === 'common') {
+                select.innerHTML = `
+                    <option value="essential">필수/자금</option>
+                    <option value="electronics">전자기기</option>
+                    <option value="toiletries">세면/화장품</option>
+                    <option value="medicine">비상약</option>
+                `;
+            } else {
+                select.innerHTML = `
+                    <option value="clothes">의류 (수량형)</option>
+                    <option value="personal">소지품 (체크형)</option>
+                `;
+            }
+        }
+
         function renderChecklist() {
             const container = document.getElementById('checklistContainer');
             container.innerHTML = '';
+            
+            const currentData = appData[currentTab];
 
-            for (const [categoryKey, categoryData] of Object.entries(checklistData)) {
-                // Skip rendering if category is empty
+            for (const [categoryKey, categoryData] of Object.entries(currentData)) {
                 if (categoryData.items.length === 0) continue;
 
                 const section = document.createElement('section');
-                section.className = 'bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6';
+                section.className = 'bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden';
                 
-                // Category Header
                 const header = document.createElement('div');
                 header.className = 'bg-gray-50 px-4 py-3 border-b border-gray-100 flex justify-between items-center';
-                header.innerHTML = `<h2 class="text-lg font-semibold text-gray-800">${categoryData.title}</h2>`;
+                header.innerHTML = `<h2 class="text-[15px] font-bold text-gray-800">${categoryData.title}</h2>`;
                 section.appendChild(header);
 
-                // Items List
                 const ul = document.createElement('ul');
                 ul.className = 'divide-y divide-gray-50';
 
                 categoryData.items.forEach(item => {
                     const li = document.createElement('li');
-                    li.className = `p-4 flex items-center justify-between hover:bg-gray-50 transition-colors ${item.checked ? 'checked-item' : ''}`;
+                    li.className = `p-3 sm:p-4 flex items-center justify-between transition-colors ${item.checked ? 'checked-item bg-gray-50' : 'hover:bg-gray-50'}`;
                     
+                    // 체크박스와 수량조절기를 통합하여 렌더링
                     li.innerHTML = `
-                        <label class="flex items-center cursor-pointer flex-1 checkbox-container group">
+                        <label class="flex items-center cursor-pointer flex-1 checkbox-container group overflow-hidden">
                             <input type="checkbox" class="peer sr-only" ${item.checked ? 'checked' : ''} onchange="toggleItem('${categoryKey}', '${item.id}')">
-                            <div class="w-6 h-6 rounded border-2 border-gray-300 mr-3 flex items-center justify-center bg-white transition-colors group-hover:border-blue-400 peer-focus:ring-2 peer-focus:ring-blue-200">
-                                <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <div class="w-6 h-6 rounded-full border-2 border-gray-300 mr-3 flex-shrink-0 flex items-center justify-center bg-white transition-colors group-hover:border-blue-400 peer-focus:ring-2 peer-focus:ring-blue-200">
+                                <svg class="w-3.5 h-3.5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
                                 </svg>
                             </div>
-                            <span class="item-text text-gray-700 select-none">${item.text}</span>
+                            <span class="item-text text-gray-700 text-sm sm:text-base select-none flex-1 pr-2 truncate">${item.text}</span>
                         </label>
-                        <button onclick="deleteItem('${categoryKey}', '${item.id}')" class="text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-colors focus:outline-none" aria-label="삭제">
-                            <i class="fa-regular fa-trash-can"></i>
+                        
+                        ${item.type === 'counter' ? `
+                        <div class="flex items-center gap-1 sm:gap-2 mx-1 shrink-0">
+                            <button onclick="updateCount('${categoryKey}', '${item.id}', -1)" class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-200 active:bg-gray-300 transition-colors text-lg font-bold">-</button>
+                            <span class="w-6 text-center font-bold text-gray-800">${item.count}</span>
+                            <button onclick="updateCount('${categoryKey}', '${item.id}', 1)" class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200 active:bg-blue-300 transition-colors text-lg font-bold">+</button>
+                        </div>
+                        ` : ''}
+
+                        <button onclick="deleteItem('${categoryKey}', '${item.id}')" class="text-gray-300 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-colors focus:outline-none shrink-0 ml-1">
+                            <i class="fa-solid fa-xmark"></i>
                         </button>
                     `;
                     ul.appendChild(li);
@@ -258,18 +379,32 @@
             }
         }
 
-
-        // Toggle item checked state
         function toggleItem(categoryKey, itemId) {
-            const item = checklistData[categoryKey].items.find(i => i.id === itemId);
+            const item = appData[currentTab][categoryKey].items.find(i => i.id === itemId);
             if (item) {
                 item.checked = !item.checked;
                 saveData();
-                renderChecklist(); // Re-render to update styles
+                renderChecklist(); 
             }
         }
 
-        // Add a new item
+        function updateCount(categoryKey, itemId, change) {
+            const item = appData[currentTab][categoryKey].items.find(i => i.id === itemId);
+            if (item) {
+                item.count = Math.max(0, item.count + change); // 0 밑으로 내려가지 않음
+                
+                // 수량이 1 이상이면 자동으로 체크, 0이면 자동으로 체크 해제
+                if (item.count > 0) {
+                    item.checked = true;
+                } else {
+                    item.checked = false;
+                }
+                
+                saveData();
+                renderChecklist();
+            }
+        }
+
         function addNewItem() {
             const input = document.getElementById('newItemInput');
             const categoryKey = document.getElementById('categorySelect').value;
@@ -277,43 +412,41 @@
 
             if (text === '') return;
 
+            // 추가하는 카테고리에 따라 타입 결정
+            const isCounter = categoryKey === 'clothes'; 
+            
             const newItem = {
                 id: 'custom_' + Date.now(),
                 text: text,
-                checked: false
+                type: isCounter ? 'counter' : 'checkbox',
+                checked: false, // 모두 기본적으로 체크 안된 상태
+                ...(isCounter ? { count: 0 } : {}) // 추가 시 기본 수량은 0으로 시작
             };
 
-            checklistData[categoryKey].items.push(newItem);
+            appData[currentTab][categoryKey].items.push(newItem);
             input.value = '';
             
             saveData();
             renderChecklist();
         }
 
-        // Handle Enter key for input
         function handleKeyPress(e) {
-            if (e.key === 'Enter') {
-                addNewItem();
-            }
+            if (e.key === 'Enter') addNewItem();
         }
 
-        // Delete an item
         function deleteItem(categoryKey, itemId) {
-            // Optional: Add simple confirmation for delete
-            // if(!confirm('삭제하시겠습니까?')) return; 
-            
-            checklistData[categoryKey].items = checklistData[categoryKey].items.filter(i => i.id !== itemId);
+            appData[currentTab][categoryKey].items = appData[currentTab][categoryKey].items.filter(i => i.id !== itemId);
             saveData();
             renderChecklist();
         }
 
-        // Update progress bar
         function updateProgress() {
             let totalItems = 0;
             let checkedItems = 0;
-
-            for (const key in checklistData) {
-                checklistData[key].items.forEach(item => {
+            
+            // 현재 탭의 모든 항목(수량형 포함)을 카운트하여 진행률 계산
+            for (const key in appData[currentTab]) {
+                appData[currentTab][key].items.forEach(item => {
                     totalItems++;
                     if (item.checked) checkedItems++;
                 });
@@ -321,36 +454,36 @@
 
             const percentage = totalItems === 0 ? 0 : Math.round((checkedItems / totalItems) * 100);
             
-            document.getElementById('progressBar').style.width = `${percentage}%`;
-            document.getElementById('progressText').innerText = `${percentage}% (${checkedItems}/${totalItems})`;
-            
-            // Change color based on completion
             const bar = document.getElementById('progressBar');
-            if(percentage === 100) {
-                bar.classList.remove('bg-blue-500');
-                bar.classList.add('bg-green-500');
+            bar.style.width = `${percentage}%`;
+            
+            if (totalItems === 0) {
+                document.getElementById('progressText').innerText = '체크 항목 없음';
             } else {
-                bar.classList.remove('bg-green-500');
-                bar.classList.add('bg-blue-500');
+                document.getElementById('progressText').innerText = `${percentage}% (${checkedItems}/${totalItems})`;
+            }
+            
+            if(percentage === 100 && totalItems > 0) {
+                bar.classList.replace('bg-blue-500', 'bg-green-500');
+            } else {
+                bar.classList.replace('bg-green-500', 'bg-blue-500');
             }
         }
 
-        // Reset data to defaults
         function confirmReset() {
-            // Using a simple custom modal instead of alert/confirm as per instructions
             createModal(
-                '초기화 확인', 
-                '체크리스트를 처음 상태로 되돌리시겠습니까?<br>추가하신 항목과 체크 기록이 모두 삭제됩니다.',
+                '현재 탭 초기화', 
+                `정말로 <b>${tabNames[currentTab]}</b> 목록을 처음 상태로 되돌리시겠습니까? 추가하신 항목이 모두 삭제됩니다.`,
                 () => {
-                    checklistData = JSON.parse(JSON.stringify(defaultData));
+                    // 현재 탭의 고유 기본 데이터(엄마, 딸 전용 등 포함)로 완벽하게 덮어쓰기
+                    appData[currentTab] = JSON.parse(JSON.stringify(defaultAppData[currentTab]));
+                    
                     saveData();
                     renderChecklist();
                 }
             );
         }
 
-        
-        // Helper function to create a beautiful confirm modal
         function createModal(title, message, onConfirm) {
             const overlay = document.createElement('div');
             overlay.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 transition-opacity duration-300';
@@ -360,17 +493,16 @@
             
             modal.innerHTML = `
                 <h3 class="text-lg font-bold text-gray-900 mb-2">${title}</h3>
-                <p class="text-sm text-gray-500 mb-6">${message}</p>
-                <div class="flex justify-end gap-3">
-                    <button id="modalCancelBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">취소</button>
-                    <button id="modalConfirmBtn" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">확인</button>
+                <p class="text-sm text-gray-600 mb-6 leading-relaxed">${message}</p>
+                <div class="flex justify-end gap-2">
+                    <button id="modalCancelBtn" class="px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">취소</button>
+                    <button id="modalConfirmBtn" class="px-4 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">초기화</button>
                 </div>
             `;
             
             overlay.appendChild(modal);
             document.body.appendChild(overlay);
 
-            // Animate in
             requestAnimationFrame(() => {
                 overlay.classList.remove('opacity-0');
                 modal.classList.remove('scale-95');
@@ -387,14 +519,9 @@
                 onConfirm();
                 close();
             };
-            
-            // Close on background click
-            overlay.onclick = (e) => {
-                if(e.target === overlay) close();
-            };
+            overlay.onclick = (e) => { if(e.target === overlay) close(); };
         }
 
-        // Run init on load
         window.onload = init;
     </script>
 </body>
