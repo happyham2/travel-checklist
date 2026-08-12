@@ -2,135 +2,121 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <!-- 모바일 최적화를 위한 뷰포트 설정 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>해외여행 준비물 체크리스트</title>
+    <title>가족 해외여행 체크리스트</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome 아이콘 CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap');
         
         body {
             font-family: 'Pretendard', sans-serif;
-            background-color: #f3f4f6;
-            color: #1f2937;
-            /* 하단 네비게이션 바 공간 확보 */
-            padding-bottom: 80px; 
+            background-color: #f8fafc;
+            color: #334155;
+            padding-bottom: 90px;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        
-        /* Checkbox animation */
         .checkbox-container input:checked + div {
             background-color: #3b82f6;
             border-color: #3b82f6;
         }
         .checkbox-container input:checked + div svg { display: block; }
 
-        /* Strikethrough */
         .item-text { transition: all 0.2s ease; }
-        .checked-item .item-text { text-decoration: line-through; color: #9ca3af; }
+        .checked-item .item-text { text-decoration: line-through; color: #94a3b8; }
 
-        /* Tab active state */
-        .tab-active { color: #3b82f6; }
-        .tab-active .icon-bg { background-color: #eff6ff; }
-        .tab-inactive { color: #6b7280; }
+        .tab-active { color: #2563eb; font-weight: 700; }
+        .tab-active .icon-bg { background-color: #dbeafe; transform: scale(1.05); }
+        .tab-inactive { color: #94a3b8; font-weight: 500; }
         
-        /* iOS Safe Area */
         .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <header class="sticky top-0 bg-white/90 backdrop-blur-md shadow-sm z-20 px-4 py-4 sm:px-6 lg:px-8">
-        <div class="max-w-3xl mx-auto flex items-center justify-between">
-            <h1 id="headerTitle" class="text-xl font-bold text-gray-900 flex items-center gap-2 transition-all">
+    <header class="sticky top-0 bg-white/95 backdrop-blur-md shadow-sm z-40 px-4 py-3 sm:px-6 transition-all duration-300">
+        <div class="max-w-2xl mx-auto flex items-center justify-between">
+            <h1 id="headerTitle" class="text-[1.15rem] font-bold text-slate-800 flex items-center gap-2">
                 <i class="fa-solid fa-plane-departure text-blue-500"></i>
                 가족 공통 준비물
             </h1>
             
-            <!-- 초기화 버튼 (상단으로 이동) -->
-            <button onclick="confirmReset()" class="text-gray-400 hover:text-red-500 bg-gray-100 hover:bg-red-50 p-2.5 rounded-full transition-colors focus:outline-none" aria-label="초기화" title="현재 탭 초기화">
+            <button onclick="confirmReset()" class="text-slate-400 hover:text-red-500 bg-slate-100 p-2.5 rounded-full transition-colors active:scale-95" aria-label="초기화">
                 <i class="fa-solid fa-rotate-right"></i>
             </button>
         </div>
         
-        <div class="max-w-3xl mx-auto mt-3">
-            <div class="flex justify-between text-xs font-medium text-gray-500 mb-1">
-                <span>진행률 (체크 항목 기준)</span>
-                <span id="progressText">0%</span>
+        <!-- 진행률 바 -->
+        <div class="max-w-2xl mx-auto mt-3">
+            <div class="flex justify-between text-xs font-semibold text-slate-500 mb-1.5 px-0.5">
+                <span>진행률</span>
+                <span id="progressText" class="text-blue-600">0%</span>
             </div>
-            <div class="w-full bg-gray-200 rounded-full h-1.5">
-                <div id="progressBar" class="bg-blue-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+            <div class="w-full bg-slate-200 rounded-full h-2">
+                <div id="progressBar" class="bg-blue-500 h-2 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-3xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+    <main class="max-w-2xl mx-auto px-4 py-5 sm:px-6">
         
-        <!-- 새 항목 추가 폼 -->
-        <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm mb-6 border border-gray-100 flex gap-2">
-            <select id="categorySelect" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 outline-none w-1/3 min-w-[100px]">
-                <!-- JS에서 동적 생성됨 -->
+        <!-- 입력 폼 -->
+        <div class="bg-white p-3.5 rounded-2xl shadow-sm mb-6 border border-slate-100 flex gap-2 items-center">
+            <select id="categorySelect" class="bg-slate-50 border-none text-slate-700 text-[13px] rounded-xl focus:ring-2 focus:ring-blue-100 block py-3 pl-3 pr-8 outline-none font-medium appearance-none">
             </select>
-            <input type="text" id="newItemInput" placeholder="준비물 추가..." class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 outline-none" onkeypress="handleKeyPress(event)">
-            <button onclick="addNewItem()" class="text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-4 py-2 outline-none transition-colors whitespace-nowrap">
-                추가
+            <input type="text" id="newItemInput" placeholder="물건 추가..." class="bg-slate-50 border-none text-slate-800 text-[15px] rounded-xl focus:ring-2 focus:ring-blue-100 block w-full p-3 outline-none" onkeypress="handleKeyPress(event)">
+            <button onclick="addNewItem()" class="text-white bg-blue-600 active:bg-blue-700 font-semibold rounded-xl text-[14px] px-4 py-3 outline-none transition-transform active:scale-95 whitespace-nowrap shadow-sm">
+                <i class="fa-solid fa-plus"></i>
             </button>
         </div>
 
-        <!-- 체크리스트 리스트 -->
-        <div id="checklistContainer" class="space-y-5 mb-20">
-            <!-- JS에서 동적 렌더링 -->
+        <!-- 체크리스트 목록 영역 -->
+        <div id="checklistContainer" class="space-y-4">
         </div>
 
     </main>
 
-    <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 pb-safe z-30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-        <div class="max-w-3xl mx-auto flex justify-around items-center px-2 py-2">
-            
-            <button onclick="changeTab('common')" id="tab-common" class="flex flex-col items-center p-2 min-w-[60px] tab-active transition-colors">
-                <div class="icon-bg w-10 h-10 rounded-full flex items-center justify-center mb-1 transition-colors">
-                    <i class="fa-solid fa-suitcase-rolling text-lg"></i>
+    <nav class="fixed bottom-0 w-full bg-white border-t border-slate-200 pb-safe z-40 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)]">
+        <div class="max-w-2xl mx-auto flex justify-between items-center px-1 sm:px-4 py-1.5">
+            <button onclick="changeTab('common')" id="tab-common" class="flex flex-col items-center flex-1 py-1.5 tab-active transition-all duration-200">
+                <div class="icon-bg w-10 h-10 rounded-full flex items-center justify-center mb-0.5 transition-all duration-300">
+                    <i class="fa-solid fa-suitcase-rolling text-[1.1rem]"></i>
                 </div>
-                <span class="text-[11px] font-semibold">공통</span>
+                <span class="text-[10px] tracking-tight">공통</span>
             </button>
-
-            <button onclick="changeTab('dad')" id="tab-dad" class="flex flex-col items-center p-2 min-w-[60px] tab-inactive transition-colors">
-                <div class="icon-bg w-10 h-10 rounded-full flex items-center justify-center mb-1 transition-colors">
-                    <i class="fa-solid fa-user text-lg"></i>
+            <button onclick="changeTab('dad')" id="tab-dad" class="flex flex-col items-center flex-1 py-1.5 tab-inactive transition-all duration-200">
+                <div class="icon-bg w-10 h-10 rounded-full flex items-center justify-center mb-0.5 transition-all duration-300">
+                    <i class="fa-solid fa-user-tie text-[1.1rem]"></i>
                 </div>
-                <span class="text-[11px] font-semibold">아빠</span>
+                <span class="text-[10px] tracking-tight">아빠</span>
             </button>
-
-            <button onclick="changeTab('mom')" id="tab-mom" class="flex flex-col items-center p-2 min-w-[60px] tab-inactive transition-colors">
-                <div class="icon-bg w-10 h-10 rounded-full flex items-center justify-center mb-1 transition-colors">
-                    <i class="fa-solid fa-user text-lg"></i>
+            <button onclick="changeTab('mom')" id="tab-mom" class="flex flex-col items-center flex-1 py-1.5 tab-inactive transition-all duration-200">
+                <div class="icon-bg w-10 h-10 rounded-full flex items-center justify-center mb-0.5 transition-all duration-300">
+                    <i class="fa-solid fa-user-nurse text-[1.1rem]"></i>
                 </div>
-                <span class="text-[11px] font-semibold">엄마</span>
+                <span class="text-[10px] tracking-tight">엄마</span>
             </button>
-
-            <button onclick="changeTab('daughter')" id="tab-daughter" class="flex flex-col items-center p-2 min-w-[60px] tab-inactive transition-colors">
-                <div class="icon-bg w-10 h-10 rounded-full flex items-center justify-center mb-1 transition-colors">
-                    <i class="fa-solid fa-child-reaching text-lg"></i>
+            <button onclick="changeTab('daughter')" id="tab-daughter" class="flex flex-col items-center flex-1 py-1.5 tab-inactive transition-all duration-200">
+                <div class="icon-bg w-10 h-10 rounded-full flex items-center justify-center mb-0.5 transition-all duration-300">
+                    <i class="fa-solid fa-child-dress text-[1.1rem]"></i>
                 </div>
-                <span class="text-[11px] font-semibold">딸</span>
+                <span class="text-[10px] tracking-tight">딸</span>
             </button>
-
-            <button onclick="changeTab('son')" id="tab-son" class="flex flex-col items-center p-2 min-w-[60px] tab-inactive transition-colors">
-                <div class="icon-bg w-10 h-10 rounded-full flex items-center justify-center mb-1 transition-colors">
-                    <i class="fa-solid fa-child text-lg"></i>
+            <button onclick="changeTab('son')" id="tab-son" class="flex flex-col items-center flex-1 py-1.5 tab-inactive transition-all duration-200">
+                <div class="icon-bg w-10 h-10 rounded-full flex items-center justify-center mb-0.5 transition-all duration-300">
+                    <i class="fa-solid fa-child text-[1.1rem]"></i>
                 </div>
-                <span class="text-[11px] font-semibold">아들</span>
+                <span class="text-[10px] tracking-tight">아들</span>
             </button>
-
         </div>
     </nav>
 
     <script>
-        // 공통 기본 데이터 (이전과 동일)
+        // 공통 데이터 정의
         const commonDefaultData = {
             essential: { title: "🛂 필수 서류 및 자금", items: [
                 { id: 'e1', text: "여권 (유효기간 확인)", type: 'checkbox', checked: false },
@@ -140,14 +126,14 @@
                 { id: 'e6', text: "현지 통화 (현금 소량)", type: 'checkbox', checked: false }
             ]},
             electronics: { title: "📱 전자기기", items: [
-                { id: 'el3', text: "멀티 어댑터 (돼지코)", type: 'checkbox', checked: false },
-                { id: 'el4', text: "유심 / eSIM / 로밍", type: 'checkbox', checked: false },
-                { id: 'el5', text: "멀티탭", type: 'checkbox', checked: false },
-                { id: 'el6', text: "충전케이블", type: 'checkbox', checked: false },
-                { id: 'el7', text: "카메라", type: 'checkbox', checked: false },
-                { id: 'el8', text: "셀카봉", type: 'checkbox', checked: false },
-                { id: 'el9', text: "가방무게저울", type: 'checkbox', checked: false },
-                { id: 'el10', text: "다리미 (휴대용)", type: 'checkbox', checked: false }
+                { id: 'el1', text: "멀티 어댑터 (돼지코)", type: 'checkbox', checked: false },
+                { id: 'el2', text: "유심 / eSIM / 로밍", type: 'checkbox', checked: false },
+                { id: 'el3', text: "멀티탭", type: 'checkbox', checked: false },
+                { id: 'el4', text: "충전케이블", type: 'checkbox', checked: false },
+                { id: 'el5', text: "카메라", type: 'checkbox', checked: false },
+                { id: 'el6', text: "셀카봉", type: 'checkbox', checked: false },
+                { id: 'el7', text: "가방무게저울", type: 'checkbox', checked: false },
+                { id: 'el8', text: "다리미 (휴대용)", type: 'checkbox', checked: false }
             ]},
             toiletries: { title: "🧴 세면도구 및 화장품", items: [
                 { id: 't1', text: "칫솔, 치약", type: 'checkbox', checked: false },
@@ -168,7 +154,6 @@
             ]}
         };
 
-        // 개인별 공통 기본 템플릿
         const personalDefaultTemplate = {
             clothes: {
                 title: "👕 의류 (수량 체크)",
@@ -193,14 +178,11 @@
             }
         };
 
-        // 아빠, 아들 데이터 구성 (기본 템플릿과 동일)
         const dadData = JSON.parse(JSON.stringify(personalDefaultTemplate));
-        dadData.personal.items.push(
-            { id: 'dad_p1', text: "면도기", type: 'checkbox', checked: false }
-        );
+        dadData.personal.items.push({ id: 'dad_p1', text: "면도기", type: 'checkbox', checked: false });
+        
         const sonData = JSON.parse(JSON.stringify(personalDefaultTemplate));
 
-        // 엄마 전용 데이터 추가 (다이슨 등 추가)
         const momData = JSON.parse(JSON.stringify(personalDefaultTemplate));
         momData.personal.items.push(
             { id: 'm_p1', text: "여성용품", type: 'checkbox', checked: false },
@@ -210,7 +192,6 @@
             { id: 'm_p5', text: "머리끈", type: 'checkbox', checked: false }
         );
 
-        // 딸 전용 데이터 추가
         const daughterData = JSON.parse(JSON.stringify(personalDefaultTemplate));
         daughterData.personal.items.push(
             { id: 'd_p1', text: "여성용품", type: 'checkbox', checked: false },
@@ -220,7 +201,6 @@
             { id: 'd_p5', text: "머리끈", type: 'checkbox', checked: false }
         );
 
-        // 전체 앱 데이터 구조
         const defaultAppData = {
             common: commonDefaultData,
             dad: dadData,
@@ -232,7 +212,6 @@
         let appData = {};
         let currentTab = 'common';
 
-        // 탭 이름 매핑 (이름 변경)
         const tabNames = {
             common: "가족 공통 준비물",
             dad: "아빠 님의 짐",
@@ -249,23 +228,25 @@
         }
 
         function loadData() {
-            // 저장소 키를 v4로 변경하여 새로 추가된 기본 데이터(엄마, 딸 전용 등)가 바로 반영되도록 설정
-            const savedData = localStorage.getItem('travelApp_v4');
+            const savedData = localStorage.getItem('travelApp_v5_mobile');
             if (savedData) {
-                appData = JSON.parse(savedData);
-                for (const key in defaultAppData) {
-                    if (!appData[key]) {
-                        appData[key] = JSON.parse(JSON.stringify(defaultAppData[key]));
-                    }
-                }
-                for (const tabKey in appData) {
-                    for (const category in appData[tabKey]) {
-                        appData[tabKey][category].items.forEach(item => {
-                            if (item.checked === undefined) {
-                                item.checked = false;
+                try {
+                    appData = JSON.parse(savedData);
+                    for (const key in defaultAppData) {
+                        if (!appData[key]) {
+                            appData[key] = JSON.parse(JSON.stringify(defaultAppData[key]));
+                        } else {
+                            for (const category in defaultAppData[key]) {
+                                if (!appData[key][category]) {
+                                    appData[key][category] = JSON.parse(JSON.stringify(defaultAppData[key][category]));
+                                } else if (!appData[key][category].items) {
+                                    appData[key][category].items = [];
+                                }
                             }
-                        });
+                        }
                     }
+                } catch (e) {
+                    appData = JSON.parse(JSON.stringify(defaultAppData));
                 }
             } else {
                 appData = JSON.parse(JSON.stringify(defaultAppData));
@@ -273,20 +254,18 @@
         }
 
         function saveData() {
-            localStorage.setItem('travelApp_v4', JSON.stringify(appData));
+            localStorage.setItem('travelApp_v5_mobile', JSON.stringify(appData));
             updateProgress();
         }
 
         function changeTab(tabId) {
             currentTab = tabId;
             
-            // 헤더 제목 변경
             document.getElementById('headerTitle').innerHTML = `
-                ${tabId === 'common' ? '<i class="fa-solid fa-plane-departure text-blue-500"></i>' : '<i class="fa-solid fa-briefcase text-blue-500"></i>'}
+                ${tabId === 'common' ? '<i class="fa-solid fa-plane-departure text-blue-500"></i>' : '<i class="fa-solid fa-suitcase text-blue-500"></i>'}
                 ${tabNames[tabId]}
             `;
 
-            // 하단 탭 스타일 업데이트
             Object.keys(tabNames).forEach(id => {
                 const btn = document.getElementById(`tab-${id}`);
                 if (id === tabId) {
@@ -301,9 +280,9 @@
             updateAddForm();
             renderChecklist();
             updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 입력 폼 카테고리 업데이트 (공통 vs 개인)
         function updateAddForm() {
             const select = document.getElementById('categorySelect');
             select.innerHTML = '';
@@ -312,13 +291,13 @@
                 select.innerHTML = `
                     <option value="essential">필수/자금</option>
                     <option value="electronics">전자기기</option>
-                    <option value="toiletries">세면/화장품</option>
+                    <option value="toiletries">세면용품</option>
                     <option value="medicine">비상약</option>
                 `;
             } else {
                 select.innerHTML = `
-                    <option value="clothes">의류 (수량형)</option>
-                    <option value="personal">소지품 (체크형)</option>
+                    <option value="clothes">의류 (수량)</option>
+                    <option value="personal">소지품</option>
                 `;
             }
         }
@@ -333,41 +312,40 @@
                 if (categoryData.items.length === 0) continue;
 
                 const section = document.createElement('section');
-                section.className = 'bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden';
+                section.className = 'bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden';
                 
                 const header = document.createElement('div');
-                header.className = 'bg-gray-50 px-4 py-3 border-b border-gray-100 flex justify-between items-center';
-                header.innerHTML = `<h2 class="text-[15px] font-bold text-gray-800">${categoryData.title}</h2>`;
+                header.className = 'bg-slate-50/80 px-4 py-3 border-b border-slate-100 flex justify-between items-center';
+                header.innerHTML = `<h2 class="text-[14px] font-bold text-slate-800">${categoryData.title}</h2>`;
                 section.appendChild(header);
 
                 const ul = document.createElement('ul');
-                ul.className = 'divide-y divide-gray-50';
+                ul.className = 'divide-y divide-slate-50';
 
                 categoryData.items.forEach(item => {
                     const li = document.createElement('li');
-                    li.className = `p-3 sm:p-4 flex items-center justify-between transition-colors ${item.checked ? 'checked-item bg-gray-50' : 'hover:bg-gray-50'}`;
+                    li.className = `p-3.5 sm:p-4 flex items-center justify-between transition-colors ${item.checked ? 'checked-item bg-slate-50/50' : 'active:bg-slate-50'}`;
                     
-                    // 체크박스와 수량조절기를 통합하여 렌더링
                     li.innerHTML = `
-                        <label class="flex items-center cursor-pointer flex-1 checkbox-container group overflow-hidden">
+                        <label class="flex items-center cursor-pointer flex-1 checkbox-container group overflow-hidden py-1">
                             <input type="checkbox" class="peer sr-only" ${item.checked ? 'checked' : ''} onchange="toggleItem('${categoryKey}', '${item.id}')">
-                            <div class="w-6 h-6 rounded-full border-2 border-gray-300 mr-3 flex-shrink-0 flex items-center justify-center bg-white transition-colors group-hover:border-blue-400 peer-focus:ring-2 peer-focus:ring-blue-200">
+                            <div class="w-6 h-6 rounded-full border-2 border-slate-300 mr-3 flex-shrink-0 flex items-center justify-center bg-white transition-all peer-active:scale-95">
                                 <svg class="w-3.5 h-3.5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
                                 </svg>
                             </div>
-                            <span class="item-text text-gray-700 text-sm sm:text-base select-none flex-1 pr-2 truncate">${item.text}</span>
+                            <span class="item-text text-slate-700 text-[15px] sm:text-base select-none flex-1 pr-2 truncate font-medium">${item.text}</span>
                         </label>
                         
                         ${item.type === 'counter' ? `
-                        <div class="flex items-center gap-1 sm:gap-2 mx-1 shrink-0">
-                            <button onclick="updateCount('${categoryKey}', '${item.id}', -1)" class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-200 active:bg-gray-300 transition-colors text-lg font-bold">-</button>
-                            <span class="w-6 text-center font-bold text-gray-800">${item.count}</span>
-                            <button onclick="updateCount('${categoryKey}', '${item.id}', 1)" class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200 active:bg-blue-300 transition-colors text-lg font-bold">+</button>
+                        <div class="flex items-center gap-1 mx-1 shrink-0 bg-slate-50 rounded-full p-1 border border-slate-100">
+                            <button onclick="updateCount('${categoryKey}', '${item.id}', -1)" class="w-7 h-7 rounded-full bg-white text-slate-600 shadow-sm flex items-center justify-center active:bg-slate-200 transition-colors text-lg font-bold pb-0.5">-</button>
+                            <span class="w-6 text-center font-bold text-slate-800 text-[14px]">${item.count}</span>
+                            <button onclick="updateCount('${categoryKey}', '${item.id}', 1)" class="w-7 h-7 rounded-full bg-blue-100 text-blue-600 shadow-sm flex items-center justify-center active:bg-blue-200 transition-colors text-lg font-bold pb-0.5">+</button>
                         </div>
                         ` : ''}
 
-                        <button onclick="deleteItem('${categoryKey}', '${item.id}')" class="text-gray-300 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-colors focus:outline-none shrink-0 ml-1">
+                        <button onclick="deleteItem('${categoryKey}', '${item.id}')" class="text-slate-300 active:text-red-500 p-2 ml-1 rounded-full active:bg-red-50 transition-colors focus:outline-none shrink-0 text-lg">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     `;
@@ -391,15 +369,8 @@
         function updateCount(categoryKey, itemId, change) {
             const item = appData[currentTab][categoryKey].items.find(i => i.id === itemId);
             if (item) {
-                item.count = Math.max(0, item.count + change); // 0 밑으로 내려가지 않음
-                
-                // 수량이 1 이상이면 자동으로 체크, 0이면 자동으로 체크 해제
-                if (item.count > 0) {
-                    item.checked = true;
-                } else {
-                    item.checked = false;
-                }
-                
+                item.count = Math.max(0, item.count + change);
+                item.checked = item.count > 0;
                 saveData();
                 renderChecklist();
             }
@@ -412,19 +383,19 @@
 
             if (text === '') return;
 
-            // 추가하는 카테고리에 따라 타입 결정
             const isCounter = categoryKey === 'clothes'; 
             
             const newItem = {
                 id: 'custom_' + Date.now(),
                 text: text,
                 type: isCounter ? 'counter' : 'checkbox',
-                checked: false, // 모두 기본적으로 체크 안된 상태
-                ...(isCounter ? { count: 0 } : {}) // 추가 시 기본 수량은 0으로 시작
+                checked: false,
+                ...(isCounter ? { count: 0 } : {})
             };
 
             appData[currentTab][categoryKey].items.push(newItem);
             input.value = '';
+            input.blur();
             
             saveData();
             renderChecklist();
@@ -444,12 +415,15 @@
             let totalItems = 0;
             let checkedItems = 0;
             
-            // 현재 탭의 모든 항목(수량형 포함)을 카운트하여 진행률 계산
-            for (const key in appData[currentTab]) {
-                appData[currentTab][key].items.forEach(item => {
-                    totalItems++;
-                    if (item.checked) checkedItems++;
-                });
+            if (appData[currentTab]) {
+                for (const key in appData[currentTab]) {
+                    if (appData[currentTab][key] && appData[currentTab][key].items) {
+                        appData[currentTab][key].items.forEach(item => {
+                            totalItems++;
+                            if (item.checked) checkedItems++;
+                        });
+                    }
+                }
             }
 
             const percentage = totalItems === 0 ? 0 : Math.round((checkedItems / totalItems) * 100);
@@ -457,27 +431,29 @@
             const bar = document.getElementById('progressBar');
             bar.style.width = `${percentage}%`;
             
-            if (totalItems === 0) {
-                document.getElementById('progressText').innerText = '체크 항목 없음';
-            } else {
-                document.getElementById('progressText').innerText = `${percentage}% (${checkedItems}/${totalItems})`;
-            }
+            const progressText = document.getElementById('progressText');
             
-            if(percentage === 100 && totalItems > 0) {
-                bar.classList.replace('bg-blue-500', 'bg-green-500');
+            if (totalItems === 0) {
+                progressText.innerText = '0%';
+                progressText.className = 'text-slate-400';
             } else {
-                bar.classList.replace('bg-green-500', 'bg-blue-500');
+                progressText.innerText = `${percentage}% (${checkedItems}/${totalItems})`;
+                if(percentage === 100) {
+                    progressText.className = 'text-green-600 font-bold';
+                    bar.classList.replace('bg-blue-500', 'bg-green-500');
+                } else {
+                    progressText.className = 'text-blue-600';
+                    bar.classList.replace('bg-green-500', 'bg-blue-500');
+                }
             }
         }
 
         function confirmReset() {
             createModal(
-                '현재 탭 초기화', 
-                `정말로 <b>${tabNames[currentTab]}</b> 목록을 처음 상태로 되돌리시겠습니까? 추가하신 항목이 모두 삭제됩니다.`,
+                '탭 초기화', 
+                `<b>${tabNames[currentTab]}</b> 목록을 처음 상태로 되돌립니다.<br>추가하신 항목은 삭제됩니다.`,
                 () => {
-                    // 현재 탭의 고유 기본 데이터(엄마, 딸 전용 등 포함)로 완벽하게 덮어쓰기
                     appData[currentTab] = JSON.parse(JSON.stringify(defaultAppData[currentTab]));
-                    
                     saveData();
                     renderChecklist();
                 }
@@ -486,17 +462,17 @@
 
         function createModal(title, message, onConfirm) {
             const overlay = document.createElement('div');
-            overlay.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 transition-opacity duration-300';
+            overlay.className = 'fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-5 opacity-0 transition-opacity duration-200';
             
             const modal = document.createElement('div');
-            modal.className = 'bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 transform scale-95 transition-transform duration-300';
+            modal.className = 'bg-white rounded-3xl shadow-xl w-full max-w-[320px] p-6 transform scale-95 transition-transform duration-200';
             
             modal.innerHTML = `
-                <h3 class="text-lg font-bold text-gray-900 mb-2">${title}</h3>
-                <p class="text-sm text-gray-600 mb-6 leading-relaxed">${message}</p>
-                <div class="flex justify-end gap-2">
-                    <button id="modalCancelBtn" class="px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">취소</button>
-                    <button id="modalConfirmBtn" class="px-4 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">초기화</button>
+                <h3 class="text-lg font-bold text-slate-800 mb-2 text-center">${title}</h3>
+                <p class="text-[14px] text-slate-500 mb-6 leading-relaxed text-center">${message}</p>
+                <div class="flex gap-3">
+                    <button id="modalCancelBtn" class="flex-1 py-3 text-[15px] font-bold text-slate-600 bg-slate-100 active:bg-slate-200 rounded-xl transition-colors">취소</button>
+                    <button id="modalConfirmBtn" class="flex-1 py-3 text-[15px] font-bold text-white bg-blue-600 active:bg-blue-700 rounded-xl transition-colors shadow-sm">초기화</button>
                 </div>
             `;
             
@@ -511,7 +487,7 @@
             const close = () => {
                 overlay.classList.add('opacity-0');
                 modal.classList.add('scale-95');
-                setTimeout(() => overlay.remove(), 300);
+                setTimeout(() => overlay.remove(), 200);
             };
 
             document.getElementById('modalCancelBtn').onclick = close;
